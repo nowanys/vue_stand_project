@@ -37,17 +37,17 @@
       ctx.beginPath()
       ctx.arc(ball.x,ball.y,15,0,Math.PI*2,true)
       ctx.fill()
+      // 当超过水平方向的界限时候，x速度方向改变
       if(ball.x > w || ball.x <0) {
-        angle = 180 - angle
-        updateBall()
+        xUnit = -xUnit
+      // 当超过垂直方向当界限时候，y速度方向改变
       }else if(ball.y > h || ball.y < 0) {
-        angle = 360 - angle
-        updateBall()
+        yUnit = -yUnit
       }
+      requestAnimationFrame(drawScreen)
     }
-    setInterval(() => {
-      drawScreen()
-    }, 20);
+
+    requestAnimationFrame(drawScreen)
   </script>
 </body>
 </html>

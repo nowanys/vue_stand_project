@@ -10,18 +10,21 @@ export interface Actor {
   type?: string
 }
 
-export interface BallConfig{
-  type:string;
-  position:Vector;
-  velocity:Vector;
-  radius:number;
-  color:string;
+export interface BallConfig {
+  type: string
+  position: Vector
+  velocity: Vector
+  radius: number
+  color: string
 }
 export interface VectorType {
   x: number
   y: number
 }
 export interface BallInstance {
+  color: string
+  radius: number
+  position: Vector
   // 声明 update 函数类型，并且声明函数返回值类型
   update: (arg1: any, time: number, updateId: number) => BallInstance
 }

@@ -18,6 +18,7 @@ export class Vector {
   add(vector: VectorType) {
     return new Vector(this.x + vector.x, this.y + vector.y)
   }
+  // 接收另外一个球的坐标作为参数，计算出两个点x、y轴之间坐标的间距
   subtract(vector: VectorType) {
     return new Vector(this.x - vector.x, this.y - vector.y)
   }
@@ -27,7 +28,7 @@ export class Vector {
   dotProduct(vector: VectorType) {
     return this.x * vector.x + this.y * vector.y
   }
-  // 平方根
+  // 平方根，一般在使用 subtract 后使用，用于计算两点的距离
   get magnitude() {
     return Math.sqrt(this.x ** 2 + this.y ** 2)
   }
@@ -85,38 +86,57 @@ export class Canvas {
  */
 class Ball {
   // 当前小球的位置信息
-  position!:Vector
+  position!: Vector
   // 当前小球的x,y轴速度(控制小球运动的快慢和方向)
-  velocity!:Vector
+  velocity!: Vector
+  color!: string
+  radius!: number
   // 将 BallConfig 都设置为可选
-  constructor(config?:Partial<BallConfig>) {
-    Object.assign(this,
+  constructor(config?: Partial<BallConfig>) {
+    Object.assign(
+      this,
       {
         type: 'circle',
         position: new Vector(20, 20),
         velocity: new Vector(5, 3),
         radius: 10,
-        color: 'red',
+        color: 'red'
       },
       config
-    );
+    )
   }
 
-  update(state:State, time:number, updateId:number) {
+  update(state: State, time: number, updateId: number) {
+    // 将当前球和所有的球进行距离的对比判断是否触碰
+    for (const actor of state.actors) {
+      // 如果遍历的 actors 是当前球，则跳过
+      if (this === actor) {
+        continue
+      }
+      // 获取目标点中心点和当前小球的中心点的间距
+      const distance = this.position.subtract(actor.position).magnitude
+      if (distance <= this.radius + actor.radius) {
+        this.color = 'grey'
+        actor.color = 'grey'
+      }
+    }
     // 当x轴触碰到边界就是改变 x 轴都运动方向
     if (this.position.x >= state.display.canvas.width || this.position.x <= 0) {
-      this.velocity = new Vector(-this.velocity.x, this.velocity.y);
+      this.velocity = new Vector(-this.velocity.x, this.velocity.y)
     }
 
     // 当y轴触碰到边界就是改变 y 轴都运动方向
-    if (this.position.y >= state.display.canvas.height || this.position.y <= 0) {
-      this.velocity = new Vector(this.velocity.x, -this.velocity.y);
+    if (
+      this.position.y >= state.display.canvas.height ||
+      this.position.y <= 0
+    ) {
+      this.velocity = new Vector(this.velocity.x, -this.velocity.y)
     }
     // 通过 this.position.add 更新当前小球的位置，并且返回一个新的Ball实例便于链式操作
     return new Ball({
       ...this,
-      position: this.position.add(this.velocity),
-    });
+      position: this.position.add(this.velocity)
+    })
   }
 }
 
@@ -141,7 +161,7 @@ class State {
 }
 
 /**
- * 
+ *
  * @param animation 每帧动画的回调函数
  */
 const runAnimation = (animation: Animation) => {
@@ -161,8 +181,19 @@ const runAnimation = (animation: Animation) => {
   requestAnimationFrame(frame)
 }
 const canvas = new Canvas()
+const ball1 = new Ball({
+  position: new Vector(40, 100),
+  velocity: new Vector(1, 0),
+  color: 'blue'
+})
+const ball2 = new Ball({
+  position: new Vector(200, 100),
+  velocity: new Vector(-1, 0),
+  color: 'blue'
+})
+
 const ball = new Ball()
-const actors = [ball]
+const actors = [ball1, ball2]
 let state = new State(canvas, actors)
 const startTime = new Date().getTime()
 runAnimation(time => {
@@ -170,5 +201,5 @@ runAnimation(time => {
   state = state.update(time)
   // 将小球携带的信息绘制到 canvas 上
   canvas.sync(state)
-  return (new Date().getTime() - startTime) > 5 * 1000
+  return new Date().getTime() - startTime > 5 * 1000
 })

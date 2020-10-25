@@ -84,7 +84,9 @@ export class Canvas {
  * update 方法来控制小球位置
  */
 class Ball {
+  // 当前小球的位置信息
   position!:Vector
+  // 当前小球的x,y轴速度(控制小球运动的快慢和方向)
   velocity!:Vector
   // 将 BallConfig 都设置为可选
   constructor(config?:Partial<BallConfig>) {

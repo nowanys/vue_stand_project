@@ -142,6 +142,14 @@ class Ball {
   }
 
   update(state: State, time: number, updateId: number) {
+    if (this.collisions.length > 10) {
+      this.collisions = this.collisions.slice(this.collisions.length - 3);
+    }
+    const upperLimit = new Vector(
+      state.display.canvas.width - this.radius,
+      state.display.canvas.height - this.radius
+    );
+    const lowerLimit = new Vector(0 + this.radius, 0 + this.radius);
     // 将当前球和所有的球进行距离的对比判断是否触碰
     for (const actor of state.actors) {
       // 如果遍历的 actors 是当前球，则跳过
@@ -149,7 +157,7 @@ class Ball {
         continue
       }
       // 获取目标点中心点和当前小球的中心点的间距
-      const distance = this.position.subtract(actor.position).magnitude
+      const distance = this.position.add(this.velocity).subtract(actor.position.add(actor.velocity)).magnitude
       if (distance <= this.radius + actor.radius) {
         // 计算两球相撞后的速度
         const v1 = collisionVector(this, actor)
@@ -162,22 +170,32 @@ class Ball {
       }
     }
     // 当x轴触碰到边界就是改变 x 轴都运动方向
-    if (this.position.x >= state.display.canvas.width || this.position.x <= 0) {
+    if (this.position.x >= upperLimit.x || this.position.x <= lowerLimit.x) {
       this.velocity = new Vector(-this.velocity.x, this.velocity.y)
     }
 
     // 当y轴触碰到边界就是改变 y 轴都运动方向
     if (
-      this.position.y >= state.display.canvas.height ||
-      this.position.y <= 0
+      this.position.y >= upperLimit.y ||
+      this.position.y <= lowerLimit.y
     ) {
       this.velocity = new Vector(this.velocity.x, -this.velocity.y)
     }
     // 通过 this.position.add 更新当前小球的位置，并且返回一个新的Ball实例便于链式操作
+    const newX = Math.max(
+      Math.min(this.position.x + this.velocity.x, upperLimit.x),
+      lowerLimit.x
+    );
+
+    const newY = Math.max(
+      Math.min(this.position.y + this.velocity.y, upperLimit.y),
+      lowerLimit.y
+    );
+
     return new Ball({
       ...this,
-      position: this.position.add(this.velocity)
-    })
+      position: new Vector(newX, newY),
+    });
   }
   get sphereArea() {
     return 4 * Math.PI * this.radius ** 2
@@ -225,31 +243,29 @@ const runAnimation = (animation: Animation) => {
   }
   requestAnimationFrame(frame)
 }
-const canvas = new Canvas()
+const display = new Canvas();
+
 const ball1 = new Ball({
   position: new Vector(40, 100),
-  velocity: new Vector(1, 0)
-})
+  velocity: new Vector(2, 3),
+  radius: 20,
+});
+
 const ball2 = new Ball({
   position: new Vector(200, 100),
-  velocity: new Vector(-1, 0),
-  color: 'blue'
-})
-const ball3 = new Ball({
-  position: new Vector(270, 10),
-  velocity: new Vector(-5, 10),
-  color: 'blue'
-})
+  velocity: new Vector(-1, 3),
+  color: 'blue',
+});
 
-const ball = new Ball()
-const actors = [ball1, ball2,ball3]
-let state = new State(canvas, actors)
+const actors = [ball1, ball2];
+let state = new State(display, actors);
+
 const startTime = new Date().getTime()
 runAnimation(time => {
   // 通过 state.update 检查小球当前的边界值，并且更新小球的 position 坐标
   state = state.update(time)
   // 将小球携带的信息绘制到 canvas 上
-  canvas.sync(state)
+  display.sync(state)
   // return new Date().getTime() - startTime > 5 * 1000
   return false
 })

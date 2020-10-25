@@ -102,7 +102,7 @@ class Ball {
     );
   }
 
-  update(state:any, time:any, updateId:any) {
+  update(state:State, time:number, updateId:number) {
     // 当x轴触碰到边界就是改变 x 轴都运动方向
     if (this.position.x >= state.display.canvas.width || this.position.x <= 0) {
       this.velocity = new Vector(-this.velocity.x, this.velocity.y);

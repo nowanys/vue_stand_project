@@ -157,13 +157,13 @@ class Ball {
         const v1 = Math.sin(rad) * actor.velocity.x + Math.cos(rad) * actor.velocity.y
         const v2 = Math.sin(rad) * this.velocity.x + Math.cos(rad) * this.velocity.y
         // 计算两球相撞后的速度
-        // actor.velocity = collisionVector(this, actor)
-        // this.velocity = collisionVector(actor, this)
+        actor.velocity = collisionVector(this, actor)
+        this.velocity = collisionVector(actor, this)
         // 相撞的时候交换 x，y轴方向的速度
-        const b = JSON.parse(JSON.stringify(actor.velocity))
-        const a = JSON.parse(JSON.stringify(this.velocity))
-        actor.velocity = new Vector(a.x,a.y)
-        this.velocity = new Vector(b.x,b.y)
+        // const b = JSON.parse(JSON.stringify(actor.velocity))
+        // const a = JSON.parse(JSON.stringify(this.velocity))
+        // actor.velocity = new Vector(a.x,a.y)
+        // this.velocity = new Vector(b.x,b.y)
 
         this.collisions.push(actor.id + updateId)
         actor.collisions.push(this.id + updateId)

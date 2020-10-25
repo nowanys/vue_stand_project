@@ -158,7 +158,7 @@ class Ball {
         this.velocity = v1
         actor.velocity = v2
         this.collisions.push(actor.id + updateId)
-        actor.collisions.push(actor.id + updateId)
+        actor.collisions.push(this.id + updateId)
       }
     }
     // 当x轴触碰到边界就是改变 x 轴都运动方向
@@ -235,9 +235,14 @@ const ball2 = new Ball({
   velocity: new Vector(-1, 0),
   color: 'blue'
 })
+const ball3 = new Ball({
+  position: new Vector(270, 10),
+  velocity: new Vector(-5, 10),
+  color: 'blue'
+})
 
 const ball = new Ball()
-const actors = [ball1, ball2]
+const actors = [ball1, ball2,ball3]
 let state = new State(canvas, actors)
 const startTime = new Date().getTime()
 runAnimation(time => {
@@ -245,5 +250,6 @@ runAnimation(time => {
   state = state.update(time)
   // 将小球携带的信息绘制到 canvas 上
   canvas.sync(state)
-  return new Date().getTime() - startTime > 5 * 1000
+  // return new Date().getTime() - startTime > 5 * 1000
+  return false
 })

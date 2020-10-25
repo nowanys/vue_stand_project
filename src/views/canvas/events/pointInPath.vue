@@ -1,19 +1,35 @@
 <template>
   <div>
-    <!-- <canvas ref="canvas" width="300" height="300"></canvas> -->
+    <canvas ref="canvas" width="300" height="300"></canvas>
   </div>
 </template>
 
 <script>
-import './ball'
+// import './ball'
 export default {
   name: '',
 
   data() {
     return {}
   },
-  // mounted() {},
+  mounted() {
+    this.yinzi()
+  },
   methods: {
+    yinzi() {
+      const canvas = this.$refs.canvas
+      const ctx = canvas.getContext('2d')
+      ctx.fillStyle = 'red'
+      ctx.fillRect(30, 30, 40, 20)
+      ctx.fillStyle = 'rgba(255, 255, 255, .4)'
+      ctx.fillRect(0, 0, 300, 150)
+      ctx.fillStyle = 'red'
+      ctx.fillRect(35, 35, 40, 20)
+      ctx.fillStyle = 'rgba(255, 255, 255, .4)'
+      ctx.fillRect(0, 0, 300, 150)
+      ctx.fillStyle = 'red'
+      ctx.fillRect(40, 40, 40, 20)
+    },
     init() {
       const canvas = this.$refs.canvas
       const ctx = canvas.getContext('2d')

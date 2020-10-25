@@ -22,11 +22,15 @@ export interface VectorType {
   y: number
 }
 export interface BallInstance {
+  velocity: Vector
+  collisions: number[]
+  id: number
   color: string
   radius: number
   position: Vector
   // 声明 update 函数类型，并且声明函数返回值类型
   update: (arg1: any, time: number, updateId: number) => BallInstance
+  sphereArea: number
 }
 
 export type Animation = (time: number) => boolean

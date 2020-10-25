@@ -1,3 +1,5 @@
+import { Vector } from './ball'
+// 并不会执行，在编译时候进行 console.log('Vector',Vector)
 export interface Actor {
   position: {
     x: number
@@ -8,13 +10,20 @@ export interface Actor {
   type?: string
 }
 
+export interface BallConfig{
+  type:string;
+  position:Vector;
+  velocity:Vector;
+  radius:number;
+  color:string;
+}
 export interface VectorType {
   x: number
   y: number
 }
-export interface ActorItem {
+export interface BallInstance {
   // 声明 update 函数类型，并且声明函数返回值类型
-  update: (arg1: any, time: number, updateId: number) => ActorItem
+  update: (arg1: any, time: number, updateId: number) => BallInstance
 }
 
 export type Animation = (time: number) => boolean

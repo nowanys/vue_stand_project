@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import './copy'
+import './ball'
 export default {
   name: '',
 

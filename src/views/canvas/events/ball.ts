@@ -1,18 +1,20 @@
 import {
   Actor,
   VectorType,
-  ActorItem,
+  BallInstance,
   Animation,
-  NullOrNumber
+  NullOrNumber,
+  BallConfig
 } from './ballType'
-class Vector {
+// 控制小球方向
+export class Vector {
   x: number
   y: number
   constructor(x: number, y: number) {
     this.x = x
     this.y = y
   }
-  // x,y轴速度的控制
+  // 小球位置的增加
   add(vector: VectorType) {
     return new Vector(this.x + vector.x, this.y + vector.y)
   }
@@ -33,6 +35,10 @@ class Vector {
     return Math.atan2(this.x, this.y)
   }
 }
+/**
+ * 创建 canvas 元素
+ * 绘制图形、绘制元素影子效果
+ */
 export class Canvas {
   canvas: HTMLCanvasElement
   ctx: any
@@ -73,10 +79,15 @@ export class Canvas {
     }
   }
 }
+/**
+ * 实例化小球，给小球 type、position 等属性来控制当前小球的状态
+ * update 方法来控制小球位置
+ */
 class Ball {
   position!:Vector
   velocity!:Vector
-  constructor(config?:any) {
+  // 将 BallConfig 都设置为可选
+  constructor(config?:Partial<BallConfig>) {
     Object.assign(this,
       {
         type: 'circle',
@@ -90,17 +101,16 @@ class Ball {
   }
 
   update(state:any, time:any, updateId:any) {
-
-    // Check if hitting left or right of display
+    // 当x轴触碰到边界就是改变 x 轴都运动方向
     if (this.position.x >= state.display.canvas.width || this.position.x <= 0) {
       this.velocity = new Vector(-this.velocity.x, this.velocity.y);
     }
 
-    // Check if hitting top or bottom of display
+    // 当y轴触碰到边界就是改变 y 轴都运动方向
     if (this.position.y >= state.display.canvas.height || this.position.y <= 0) {
       this.velocity = new Vector(this.velocity.x, -this.velocity.y);
     }
-
+    // 通过 this.position.add 更新当前小球的位置，并且返回一个新的Ball实例便于链式操作
     return new Ball({
       ...this,
       position: this.position.add(this.velocity),
@@ -108,10 +118,14 @@ class Ball {
   }
 }
 
+/**
+ * 控制小球状态，触发小球的 update 方法来检查小球的边界值
+ */
+
 class State {
-  display: any
-  actors: ActorItem[]
-  constructor(display: any, actors: ActorItem[]) {
+  display: Canvas
+  actors: BallInstance[]
+  constructor(display: Canvas, actors: BallInstance[]) {
     this.display = display
     this.actors = actors
   }
@@ -123,6 +137,11 @@ class State {
     return new State(this.display, actors)
   }
 }
+
+/**
+ * 
+ * @param animation 每帧动画的回调函数
+ */
 const runAnimation = (animation: Animation) => {
   // console.log('animation',animation)
   let lastTime: NullOrNumber = null
@@ -145,7 +164,9 @@ const actors = [ball]
 let state = new State(canvas, actors)
 const startTime = new Date().getTime()
 runAnimation(time => {
+  // 通过 state.update 检查小球当前的边界值，并且更新小球的 position 坐标
   state = state.update(time)
+  // 将小球携带的信息绘制到 canvas 上
   canvas.sync(state)
   return (new Date().getTime() - startTime) > 5 * 1000
 })

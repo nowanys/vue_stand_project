@@ -1,4 +1,4 @@
-import { config } from '../../../../todoList/config';
+
 interface CommonShape {
   x: number;
   y: number;
@@ -7,7 +7,12 @@ interface CommonShape {
   pathIndex?: number;
   centerX?: number;
   centerY?: number;
+  // 负责单词旋转了多少角度,每次旋转结束后需要 重置为0
   rotateDeg: number;
+  // 负责初始或者更新完以后的角度
+  initDeg: number;
+  shapePath: Path2D;
+  controlPathList: Path2D[];
 }
 export interface RectShape extends CommonShape {
   type: 'rect';
@@ -31,10 +36,12 @@ export enum Directions {
   northEstern='ne-resize',
   southEstern='se-resize',
   southWest='sw-resize',
-  crosshair='crosshair'
+  crosshair='crosshair',
+  move='move'
 }
-export type Shape = RectShape | CircleShape 
-export type Direction = Directions.northWestern | Directions.northEstern | Directions.southEstern| Directions.southWest | 'default' | Directions.crosshair
+// export type Shape = RectShape | CircleShape 
+export type Shape = RectShape
+export type Direction = Directions.northWestern | Directions.northEstern | Directions.southEstern| Directions.southWest | 'default' | Directions.crosshair | Directions.move
 
 export type Boundary = { minX: number; minY: number } | { minX: number; maxY: number } | { maxX: number; minY: number } | { maxX: number; maxY: number }
 export interface XYPosition {
@@ -48,6 +55,17 @@ export interface MouseDown extends XYPosition {
 export type DobuleNumber = [number,number]
 
 export interface Path{
-  path: CanvasPath;
+  path: Path2D;
   zIndex: number;
+}
+export interface RectTranslate {
+  x: number;
+  y: number;
+  translateX: number;
+  translateY: number;
+  startX: number;
+  startY: number;
+  fillStyle: string;
+  w: number;
+  h: number;
 }
